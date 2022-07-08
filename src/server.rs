@@ -1,4 +1,7 @@
-use std::{net::{TcpListener, TcpStream}, io::Read, ops::Deref, str::from_utf8};
+use std::{net::{TcpListener, TcpStream}, io::Read};
+use clap;
+use local_ip_address::{self, local_ip};
+
 mod unixtime;
 
 fn handle_connection(mut stream: TcpStream) {
@@ -10,7 +13,6 @@ fn handle_connection(mut stream: TcpStream) {
                                     .trim()
                                     .parse::<u128>()
                                     .unwrap();
-    //println!("{:?}", client_time);
 
     let server_time = unixtime::unix_timestamp_micros();
     let diff: f64 = (server_time - client_time) as f64 / 1000.0;
@@ -18,8 +20,30 @@ fn handle_connection(mut stream: TcpStream) {
 }
 
 fn main() {
-    println!(">>> Server running on localhost:8080");
-    let listener = TcpListener::bind("localhost:8080").unwrap();
+    // Take an argument from the command line giving the IP
+    // address and port to listen on.
+    let matches = clap::App::new("Systime-Server")
+        .arg(clap::Arg::with_name("ip")
+            .short('i')
+            .long("ip")
+            .value_name("IP")
+            .help("IP address to listen on")
+            .takes_value(true))
+        .arg(clap::Arg::with_name("port")
+            .short('p')
+            .long("port")
+            .value_name("PORT")
+            .help("Port to listen on")
+            .takes_value(true))
+        .get_matches();    
+    
+    let local_ip = local_ip().unwrap().to_string();
+    let ip = matches.value_of("ip").unwrap_or(&local_ip);
+    let port = matches.value_of("port").unwrap_or("8080");
+
+    println!(">>> Server running on {ip}:{port}");
+    let ip_with_port = format!("{ip}:{port}");
+    let listener = TcpListener::bind(ip_with_port).unwrap();
     println!(">>> Listening ...");
     for stream in listener.incoming() {
         handle_connection(stream.unwrap());
