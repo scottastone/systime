@@ -12,7 +12,7 @@ fn send(mut stream: &TcpStream, buf: &str) -> std::io::Result<()> {
 }
 
 fn main() {
-    let matches = clap::App::new("Systime-Server")
+    let matches = clap::App::new("Systime-Client")
         .arg(clap::Arg::with_name("ip")
             .short('i')
             .long("ip")
@@ -27,10 +27,9 @@ fn main() {
             .takes_value(true))
         .get_matches(); 
     
-    let ip = matches.value_of("ip").unwrap_or("localhost");
-    let port = matches.value_of("port").unwrap_or("8080").parse::<u16>().unwrap();
+    let ip: &str = matches.value_of("ip").unwrap_or("localhost");
+    let port: u16 = matches.value_of("port").unwrap_or("8080").parse::<u16>().unwrap();
     println!(">>> Connecting to server @ {ip}:{port}");
-    //println!(">>> Connected to server {:?}", con.peer_addr().unwrap());
     loop {
         let con = TcpStream::connect((ip, port))
                                     .expect("Could not connect to server!");

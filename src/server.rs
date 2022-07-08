@@ -7,7 +7,6 @@ mod unixtime;
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
     stream.read(&mut buffer).unwrap();
-    //let client_time_x = String::from_utf8_lossy(&buffer[..]).as_bytes().to_vec();
     let client_time = std::str::from_utf8(&buffer[..16])
                                     .unwrap()
                                     .trim()
@@ -42,8 +41,8 @@ fn main() {
     let port = matches.value_of("port").unwrap_or("8080");
 
     println!(">>> Server running on {ip}:{port}");
-    let ip_with_port = format!("{ip}:{port}");
-    let listener = TcpListener::bind(ip_with_port).unwrap();
+    let _ip_with_port = format!("{ip}:{port}");
+    let listener = TcpListener::bind(_ip_with_port).unwrap();
     println!(">>> Listening ...");
     for stream in listener.incoming() {
         handle_connection(stream.unwrap());
