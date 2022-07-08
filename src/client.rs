@@ -1,23 +1,24 @@
 use std::{net::TcpStream, io::Write};
 mod unixtime;
 
-fn send(mut stream: &TcpStream, buf: &str) {
+fn send(mut stream: &TcpStream, buf: &str) -> std::io::Result<()> {
+    println!("Sending value: {}", &buf);
     stream.write(buf
         .as_bytes())
-        .expect_err("Failed to send message to server.");
+        .expect(("ERROR: cannot send data to server"));
+    Ok(())
 }
 
 fn main() {
-    let con = TcpStream::connect(("localhost", 8080))
-                                .expect("Could not connect to server!");
-    println!(">>> Connected to server {:?}", con.peer_addr().unwrap());
     
+    //println!(">>> Connected to server {:?}", con.peer_addr().unwrap());
     loop {
+        let con = TcpStream::connect(("localhost", 8080))
+                                    .expect("Could not connect to server!");
         let client_ts = unixtime::unix_timestamp_micros()
                                         .to_string();
-        send(&con, &client_ts);
-        println!(">>> Client time: {}", client_ts);
-        std::thread::sleep(std::time::Duration::from_secs(1));
+        send(&con, &client_ts).unwrap();
+        std::thread::sleep(std::time::Duration::from_millis(100));
     }
 
 }
