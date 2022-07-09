@@ -20,7 +20,7 @@ fn handle_connection(mut stream: TcpStream) {
 
     let server_time = unixtime::unix_timestamp_micros();
     let diff: f64 = calc_diff(client_time, server_time) as f64 / 1000.0;
-    println!(">>> Client: {client_time}µs, Server: {server_time}µs, Ping: {diff}ms");
+    println!(">>> Client: {client_time}µs\nServer: {server_time}µs\nPing: {diff}ms");
 }
 
 fn main() {
