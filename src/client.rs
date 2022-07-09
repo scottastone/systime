@@ -1,13 +1,14 @@
 use std::{net::TcpStream, io::Write};
 use clap;
-
 mod unixtime;
 
 fn send(mut stream: &TcpStream, buf: &str) -> std::io::Result<()> {
-    println!(">>> Sending value: {}", &buf);
+    let peer_ip = stream.peer_addr().unwrap().to_string();
     stream.write(buf
         .as_bytes())
         .expect("ERROR: cannot send data to server");
+
+    println!(">>> [{peer_ip}] {buf}");
     Ok(())
 }
 

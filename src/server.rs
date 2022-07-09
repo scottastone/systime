@@ -1,7 +1,6 @@
 use std::{net::{TcpListener, TcpStream}, io::Read};
 use clap;
 use local_ip_address::{self, local_ip};
-
 mod unixtime;
 
 fn calc_diff(ts1: u128, ts2: u128) -> u128 {    
@@ -9,8 +8,9 @@ fn calc_diff(ts1: u128, ts2: u128) -> u128 {
     else {return ts2 - ts1;}
 }
 
-fn handle_connection(mut stream: TcpStream) {
-    let mut buffer = [0; 512];
+fn handle_connection(mut stream: TcpStream) -> () {
+    let peer_ip = stream.peer_addr().unwrap().to_string();
+    let mut buffer = [0 as u8; 512];
     stream.read(&mut buffer).unwrap();
     let client_time = std::str::from_utf8(&buffer[..16])
                                     .unwrap()
@@ -20,12 +20,10 @@ fn handle_connection(mut stream: TcpStream) {
 
     let server_time = unixtime::unix_timestamp_micros();
     let diff: f64 = calc_diff(client_time, server_time) as f64 / 1000.0;
-    println!(">>> Client: {client_time}µs\nServer: {server_time}µs\nPing: {diff}ms");
+    println!(">>> [{peer_ip}]: {diff}ms");
 }
 
 fn main() {
-    // Take an argument from the command line giving the IP
-    // address and port to listen on.
     let matches = clap::App::new("Systime-Server")
         .arg(clap::Arg::with_name("ip")
             .short('i')
