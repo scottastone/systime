@@ -25,10 +25,18 @@ fn main() {
             .value_name("PORT")
             .help("Port to listen on")
             .takes_value(true))
+        .arg(clap::Arg::with_name("delay")
+            .short('d')
+            .long("delay")
+            .value_name("DELAY")
+            .help("Delay between packets")
+            .takes_value(true))
         .get_matches(); 
     
     let ip: &str = matches.value_of("ip").unwrap_or("localhost");
     let port: u16 = matches.value_of("port").unwrap_or("8080").parse::<u16>().unwrap();
+    let delay = matches.value_of("delay").unwrap_or("100").parse::<u64>().unwrap();
+
     println!(">>> Connecting to server @ {ip}:{port}");
     loop {
         let con = TcpStream::connect((ip, port))
@@ -36,7 +44,7 @@ fn main() {
         let client_ts = unixtime::unix_timestamp_micros()
                                         .to_string();
         send(&con, &client_ts).unwrap();
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(std::time::Duration::from_millis(delay));
     }
 
 }
