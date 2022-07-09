@@ -4,6 +4,14 @@ use local_ip_address::{self, local_ip};
 
 mod unixtime;
 
+fn calc_diff(ts1: u128, ts2: u128) -> u128 {    
+    if ts1 > ts2 {
+        return ts1 - ts2;
+    } else {
+        return ts2 - ts1;
+    }
+}
+
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 512];
     stream.read(&mut buffer).unwrap();
@@ -14,7 +22,7 @@ fn handle_connection(mut stream: TcpStream) {
                                     .unwrap();
 
     let server_time = unixtime::unix_timestamp_micros();
-    let diff: f64 = (server_time - client_time) as f64 / 1000.0;
+    let diff: f64 = calc_diff(client_time, server_time) as f64 / 1000.0;
     println!(">>> Client: {client_time}µs, Server: {server_time}µs, Ping: {diff}ms");
 }
 

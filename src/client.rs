@@ -4,7 +4,7 @@ use clap;
 mod unixtime;
 
 fn send(mut stream: &TcpStream, buf: &str) -> std::io::Result<()> {
-    println!("Sending value: {}", &buf);
+    println!(">>> Sending value: {}", &buf);
     stream.write(buf
         .as_bytes())
         .expect("ERROR: cannot send data to server");
