@@ -5,11 +5,8 @@ use local_ip_address::{self, local_ip};
 mod unixtime;
 
 fn calc_diff(ts1: u128, ts2: u128) -> u128 {    
-    if ts1 > ts2 {
-        return ts1 - ts2;
-    } else {
-        return ts2 - ts1;
-    }
+    if ts1 > ts2 {return ts1 - ts2;} 
+    else {return ts2 - ts1;}
 }
 
 fn handle_connection(mut stream: TcpStream) {
